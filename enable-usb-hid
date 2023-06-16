@@ -9,7 +9,7 @@ set -e
 # Treat undefined environment variables as errors.
 set -u
 
-if ! grep 'dtoverlay=dwc2' /boot/config; then
+if ! grep 'dtoverlay=dwc2' /boot/config.txt; then
   echo "dtoverlay=dwc2" >> /boot/config.txt
 fi
 
@@ -24,7 +24,9 @@ mkdir -p "$ENABLE_RPI_HID_DIR"
 cp enable-rpi-hid "$ENABLE_RPI_HID_PATH"
 chmod +x "$ENABLE_RPI_HID_PATH"
 
+OG_DIR=$(dirname $PWD)
 cd $(mktemp -d)
+cp $OG_DIR/usb-gadget.systemd.j2 ./
 sed -e "s@{{ key_mime_pi_initialize_hid_script_path }}@${ENABLE_RPI_HID_PATH}@g" \
   usb-gadget.systemd.j2 > /lib/systemd/system/usb-gadget.service
 
